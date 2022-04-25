@@ -1,11 +1,12 @@
 {
-  "name": "express-boilerplate",
-  "version": "1.0.0",
+  "name": "bookify-backend",
+  "version": "0.0.1",
   "main": "./build/server.js",
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.23",
+    "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.12.0",
@@ -20,8 +21,11 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
+    "db-migrate": "^0.11.13",
+    "db-migrate-pg": "^1.2.2",
     "dotenv": "^16.0.0",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "pg": "^8.7.3"
   },
   "scripts": {
     "start": "node -r dotenv/config './build/server.js'",
