@@ -1,9 +1,9 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
+
+import apiRouter from "./routes/apiRouter";
 
 const app: Application = express();
 
-app.get("/", (_req: Request, res: Response): void => {
-  res.send("Hello World");
-});
+app.use("/api", apiRouter);
 
 export default app;
