@@ -12,7 +12,7 @@ export const index = async (
   try {
     const roles = await store.index();
 
-    res.json(roles);
+    res.status(200).json(roles);
   } catch (err) {
     next(err);
   }
@@ -26,7 +26,7 @@ export const show = async (
   try {
     const role = await store.show(Number(req.params.id));
 
-    res.json(role);
+    res.status(200).json(role);
   } catch (err) {
     next(err);
   }
@@ -44,7 +44,7 @@ export const create = async (
 
     const newRole = await store.create(role);
 
-    res.json(newRole);
+    res.status(201).json(newRole);
   } catch (err) {
     next(err);
   }
@@ -63,7 +63,7 @@ export const update = async (
 
     const updatedRole = await store.update(role);
 
-    res.json(updatedRole);
+    res.status(200).json(updatedRole);
   } catch (err) {
     next(err);
   }
@@ -77,7 +77,7 @@ export const destroy = async (
   try {
     const deletedRole = await store.destroy(Number(req.params.id));
 
-    res.json(deletedRole);
+    res.status(200).json(deletedRole);
   } catch (err) {
     next(err);
   }

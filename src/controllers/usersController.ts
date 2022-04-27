@@ -12,7 +12,7 @@ export const index = async (
   try {
     const users = await store.index();
 
-    res.json(users);
+    res.status(200).json(users);
   } catch (err) {
     next(err);
   }
@@ -26,7 +26,7 @@ export const show = async (
   try {
     const user = await store.show(Number(req.params.id));
 
-    res.json(user);
+    res.status(200).json(user);
   } catch (err) {
     next(err);
   }
@@ -49,7 +49,7 @@ export const create = async (
 
     const newUser = await store.create(user);
 
-    res.json(newUser);
+    res.status(201).json(newUser);
   } catch (err) {
     next(err);
   }
@@ -73,7 +73,7 @@ export const update = async (
 
     const updatedUser = await store.update(user);
 
-    res.json(updatedUser);
+    res.status(200).json(updatedUser);
   } catch (err) {
     next(err);
   }
@@ -87,7 +87,7 @@ export const destroy = async (
   try {
     const deletedUser = await store.destroy(Number(req.params.id));
 
-    res.json(deletedUser);
+    res.status(200).json(deletedUser);
   } catch (err) {
     next(err);
   }
