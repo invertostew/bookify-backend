@@ -1,0 +1,4 @@
+CREATE TABLE roles (
+  id SERIAL PRIMARY KEY,
+  role VARCHAR(25) NOT NULL UNIQUE CHECK(role <> '')
+);
