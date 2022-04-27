@@ -75,9 +75,9 @@ export const destroy = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const deletedUser = await store.destroy(Number(req.params.id));
+    const deletedRole = await store.destroy(Number(req.params.id));
 
-    res.json(deletedUser);
+    res.json(deletedRole);
   } catch (err) {
     next(err);
   }
