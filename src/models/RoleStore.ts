@@ -1,4 +1,5 @@
 import pool from "../database";
+import DatabaseError from "../classes/base_errors/DatabaseError";
 
 export interface Role {
   id?: number;
@@ -23,7 +24,7 @@ export class RoleStore {
 
       return result.rows;
     } catch (err) {
-      throw new Error("error...");
+      throw new DatabaseError("type", "title", "detail");
     }
   }
 
@@ -44,7 +45,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error("error...");
+      throw new DatabaseError("type", "title", "detail");
     }
   }
 
@@ -65,7 +66,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error("error...");
+      throw new DatabaseError("type", "title", "detail");
     }
   }
 
@@ -88,7 +89,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error("error...");
+      throw new DatabaseError("type", "title", "detail");
     }
   }
 
@@ -109,7 +110,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new Error("error...");
+      throw new DatabaseError("type", "title", "detail");
     }
   }
 }
