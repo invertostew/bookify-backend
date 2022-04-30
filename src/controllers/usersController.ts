@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
 import { User, UserStore } from "../models/UserStore";
 
 const store = new UserStore();
+
+const { JWT_SECRET } = process.env;
 
 export const index = async (
   _req: Request,
@@ -37,6 +40,10 @@ export const create = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  if (!JWT_SECRET) {
+    throw new Error("error");
+  }
+
   try {
     const user: User = {
       username: req.body.username,
@@ -49,7 +56,9 @@ export const create = async (
 
     const newUser = await store.create(user);
 
-    res.status(201).json(newUser);
+    const token = jwt.sign({ user: newUser }, JWT_SECRET);
+
+    res.status(201).json(token);
   } catch (err) {
     next(err);
   }

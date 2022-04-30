@@ -12,20 +12,20 @@ const errorHandler = (
 ): Response => {
   if (err instanceof DatabaseError) {
     return res.status(err.statusCode).json({
-      status: err.statusCode,
       type: err.type,
       title: err.title,
-      detail: err.detail
+      detail: err.detail,
+      status: err.statusCode
     });
   }
 
   if (err instanceof UserFacingError) {
     return res.status(err.statusCode).json({
-      status: err.statusCode,
       type: err.type,
       title: err.title,
       detail: err.detail,
-      instance: err.instance
+      instance: err.instance,
+      status: err.statusCode
     });
   }
 

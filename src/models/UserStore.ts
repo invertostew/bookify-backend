@@ -63,7 +63,7 @@ export class UserStore {
       throw new DatabaseError(
         `${APP_URL}:${APP_PORT}/api/problem/environment-variables`,
         "Missing environment variables",
-        "Please ensure that the .env file has the following environment variables: 'BCRYPT_PASSWORD' and 'SALT_ROUNDS'"
+        "Ensure that you have the following environment variables: 'BCRYPT_PASSWORD' and 'SALT_ROUNDS'"
       );
     }
 
@@ -167,10 +167,32 @@ export class UserStore {
     }
   }
 
-  // public async authenticate(
-  //   username: string,
-  //   password: string
-  // ): Promise<User> {
-  //   // implementation details
-  // }
+  public async authenticate(username: string, password: string): Promise<User> {
+    try {
+      const connection = await pool.connect();
+      const sql = `
+        SELECT
+          password_digest
+        FROM
+          ${this.DATABASE_TABLE}
+        WHERE
+          username = $1
+      `;
+      const result = await connection.query(sql, [username]);
+
+      if (!result.rows.length) {
+        throw new Error("username doesnt exist");
+      }
+
+      const user = result.rows[0];
+
+      if (!bcrypt.compareSync(password + BCRYPT_PEPPER, user.password_digest)) {
+        throw new Error("password doesnt match");
+      }
+
+      return user;
+    } catch (err) {
+      throw new Error("error..");
+    }
+  }
 }
