@@ -3,7 +3,10 @@ import ApplicationError from "./ApplicationError";
 class UserFacingError extends ApplicationError {
   public instance: string;
 
-  constructor(instance: string, ...args: [string, string, string]) {
+  constructor(
+    instance: string,
+    ...args: [type: string, title: string, detail: string]
+  ) {
     super(...args);
 
     this.instance = instance;

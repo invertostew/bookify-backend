@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
+import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 
 const { APP_URL, APP_PORT, MOMENT_FORMAT, BCRYPT_PEPPER, SALT_ROUNDS } =
   process.env;
@@ -42,11 +43,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 
@@ -72,11 +69,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 
@@ -133,11 +126,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 
@@ -178,11 +167,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 
@@ -208,11 +193,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 
@@ -230,13 +211,23 @@ export class UserStore {
       const result = await connection.query(sql, [username]);
 
       if (!result.rows.length) {
-        throw new Error("username doesnt exist");
+        throw new BadRequestError(
+          `${username}`,
+          `${APP_URL}:${APP_PORT}/api/problem/username-not-found`,
+          "Username not found",
+          `The username '${username}' does not exist`
+        );
       }
 
       const user = result.rows[0];
 
       if (!bcrypt.compareSync(password + BCRYPT_PEPPER, user.password_digest)) {
-        throw new Error("password doesnt match");
+        throw new BadRequestError(
+          `${username}`,
+          `${APP_URL}:${APP_PORT}/api/problem/incorrect-password`,
+          "Password is incorrect",
+          "The password you entered was incorrect, please try again"
+        );
       }
 
       return user;
@@ -246,11 +237,7 @@ export class UserStore {
 
       logger.error(timestamp, errString);
 
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
-        "Failed to perform database operation",
-        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
-      );
+      throw new DatabaseError();
     }
   }
 }
