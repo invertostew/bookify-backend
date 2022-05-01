@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 
 import * as rolesController from "../controllers/rolesController";
-import verifyAuthToken from "../middleware/verifyAuthToken";
+import verifyAuthToken from "../middlewares/verifyAuthToken";
 
 const rolesRouter: Router = express.Router();
 

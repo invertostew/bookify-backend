@@ -1,5 +1,12 @@
+import moment from "moment";
+
 import pool from "../database";
+import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
+
+const { APP_URL, APP_PORT } = process.env;
+
+const logger = new Logger("database_errors.txt");
 
 export interface Role {
   id?: number;
@@ -24,7 +31,16 @@ export class RoleStore {
 
       return result.rows;
     } catch (err) {
-      throw new DatabaseError("type", "title", "detail");
+      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const errString = JSON.stringify(err);
+
+      logger.error(timestamp, errString);
+
+      throw new DatabaseError(
+        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
+        "Failed to perform database operation",
+        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
+      );
     }
   }
 
@@ -45,7 +61,16 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new DatabaseError("type", "title", "detail");
+      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const errString = JSON.stringify(err);
+
+      logger.error(timestamp, errString);
+
+      throw new DatabaseError(
+        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
+        "Failed to perform database operation",
+        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
+      );
     }
   }
 
@@ -66,7 +91,16 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new DatabaseError("type", "title", "detail");
+      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const errString = JSON.stringify(err);
+
+      logger.error(timestamp, errString);
+
+      throw new DatabaseError(
+        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
+        "Failed to perform database operation",
+        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
+      );
     }
   }
 
@@ -89,7 +123,16 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new DatabaseError("type", "title", "detail");
+      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const errString = JSON.stringify(err);
+
+      logger.error(timestamp, errString);
+
+      throw new DatabaseError(
+        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
+        "Failed to perform database operation",
+        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
+      );
     }
   }
 
@@ -110,7 +153,16 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      throw new DatabaseError("type", "title", "detail");
+      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const errString = JSON.stringify(err);
+
+      logger.error(timestamp, errString);
+
+      throw new DatabaseError(
+        `${APP_URL}:${APP_PORT}/api/problem/failed-database-operation`,
+        "Failed to perform database operation",
+        "There has been an error. Please check the error logs ~/logs/database_errors.txt"
+      );
     }
   }
 }
