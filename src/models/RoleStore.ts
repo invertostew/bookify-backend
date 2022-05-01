@@ -4,8 +4,7 @@ import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 
-const { APP_URL, APP_PORT } = process.env;
-
+const { APP_URL, APP_PORT, MOMENT_FORMAT } = process.env;
 const logger = new Logger("database_errors.txt");
 
 export interface Role {
@@ -31,7 +30,7 @@ export class RoleStore {
 
       return result.rows;
     } catch (err) {
-      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const timestamp = moment().format(MOMENT_FORMAT);
       const errString = JSON.stringify(err);
 
       logger.error(timestamp, errString);
@@ -61,7 +60,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const timestamp = moment().format(MOMENT_FORMAT);
       const errString = JSON.stringify(err);
 
       logger.error(timestamp, errString);
@@ -91,7 +90,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const timestamp = moment().format(MOMENT_FORMAT);
       const errString = JSON.stringify(err);
 
       logger.error(timestamp, errString);
@@ -123,7 +122,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const timestamp = moment().format(MOMENT_FORMAT);
       const errString = JSON.stringify(err);
 
       logger.error(timestamp, errString);
@@ -153,7 +152,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format("MMMM Do YYYY, h:mm:ss a");
+      const timestamp = moment().format(MOMENT_FORMAT);
       const errString = JSON.stringify(err);
 
       logger.error(timestamp, errString);
