@@ -234,7 +234,9 @@ export class UserStore {
       const connection = await pool.connect();
       const sql = `
         SELECT
-          password_digest
+          password_digest,
+          username,
+          role_id
         FROM
           ${this.DATABASE_TABLE}
         WHERE

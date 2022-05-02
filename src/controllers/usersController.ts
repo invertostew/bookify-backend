@@ -129,9 +129,25 @@ export const authenticate = async (
       user.password
     );
 
-    const token = jwt.sign({ user: authenticatedUser }, JWT_SECRET as string);
+    console.log("authenticated user", authenticatedUser);
 
-    res.status(200).json(token);
+    // old token...
+    // const token = jwt.sign({ user: authenticatedUser }, JWT_SECRET as string);
+    // res.status(200).json(token);
+
+    const token = jwt.sign(
+      {
+        username: authenticatedUser.username,
+        role_id: authenticatedUser.role_id
+      },
+      JWT_SECRET as string
+    );
+
+    res.status(200).json({
+      username: authenticatedUser.username,
+      role_id: authenticatedUser.role_id,
+      jwt: token
+    });
   } catch (err) {
     next(err);
   }
