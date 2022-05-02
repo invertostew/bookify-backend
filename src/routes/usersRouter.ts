@@ -12,4 +12,6 @@ usersRouter
   .put(usersController.update)
   .delete(usersController.destroy);
 
+usersRouter.post("/authenticate", usersController.authenticate);
+
 export default usersRouter;

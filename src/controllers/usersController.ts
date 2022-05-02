@@ -40,10 +40,6 @@ export const create = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!JWT_SECRET) {
-    throw new Error("error");
-  }
-
   try {
     const user: User = {
       username: req.body.username,
@@ -56,7 +52,7 @@ export const create = async (
 
     const newUser = await store.create(user);
 
-    const token = jwt.sign({ user: newUser }, JWT_SECRET);
+    const token = jwt.sign({ user: newUser }, JWT_SECRET as string);
 
     res.status(201).json(token);
   } catch (err) {
@@ -97,6 +93,29 @@ export const destroy = async (
     const deletedUser = await store.destroy(Number(req.params.id));
 
     res.status(200).json(deletedUser);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const user = {
+      username: req.body.username,
+      password: req.body.password
+    };
+
+    const authenticatedUser = await store.authenticate(
+      user.username,
+      user.password
+    );
+    const token = jwt.sign({ user: authenticatedUser }, JWT_SECRET as string);
+
+    res.status(200).json(token);
   } catch (err) {
     next(err);
   }

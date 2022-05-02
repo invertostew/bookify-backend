@@ -3,8 +3,9 @@ import moment from "moment";
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
+import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 
-const { MOMENT_FORMAT } = process.env;
+const { APP_URL, MOMENT_FORMAT } = process.env;
 const logger = new Logger("database_errors.txt");
 
 export interface Role {
@@ -54,14 +55,27 @@ export class RoleStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/roles/${id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no role with id '${id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 
@@ -108,14 +122,27 @@ export class RoleStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/roles/${role.id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no role with id '${role.id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 
@@ -134,14 +161,27 @@ export class RoleStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/roles/${id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no role with id '${id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 }

@@ -14,8 +14,8 @@ const errorHandler = (
     return res.status(err.statusCode).json({
       type: err.type,
       title: err.title,
-      detail: err.detail,
-      status: err.statusCode
+      status: err.statusCode,
+      detail: err.detail
     });
   }
 
@@ -23,9 +23,9 @@ const errorHandler = (
     return res.status(err.statusCode).json({
       type: err.type,
       title: err.title,
+      status: err.statusCode,
       detail: err.detail,
-      instance: err.instance,
-      status: err.statusCode
+      instance: err.instance
     });
   }
 

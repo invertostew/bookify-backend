@@ -4,10 +4,10 @@ import bcrypt from "bcrypt";
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
+import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 
-const { APP_URL, APP_PORT, MOMENT_FORMAT, BCRYPT_PEPPER, SALT_ROUNDS } =
-  process.env;
+const { APP_URL, MOMENT_FORMAT, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
 const logger = new Logger("database_errors.txt");
 
 export interface User {
@@ -62,26 +62,31 @@ export class UserStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/users/${id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no user with id '${id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 
   public async create(user: User): Promise<User> {
-    if (!BCRYPT_PEPPER || !SALT_ROUNDS) {
-      throw new DatabaseError(
-        `${APP_URL}:${APP_PORT}/api/problem/environment-variables`,
-        "Missing environment variables",
-        "Ensure that you have the following environment variables: 'BCRYPT_PASSWORD' and 'SALT_ROUNDS'"
-      );
-    }
-
     try {
       const connection = await pool.connect();
       const sql = `
@@ -105,7 +110,7 @@ export class UserStore {
 
       const passwordDigest = bcrypt.hashSync(
         user.password + BCRYPT_PEPPER,
-        parseInt(SALT_ROUNDS, 10)
+        parseInt(SALT_ROUNDS as string, 10)
       );
 
       const result = await connection.query(sql, [
@@ -160,14 +165,27 @@ export class UserStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/users/${user.id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no user with id '${user.id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 
@@ -186,14 +204,27 @@ export class UserStore {
 
       connection.release();
 
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/users/${id}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no user with id '${id}'`
+        );
+      }
+
       return result.rows[0];
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 
@@ -212,8 +243,8 @@ export class UserStore {
 
       if (!result.rows.length) {
         throw new BadRequestError(
-          `${username}`,
-          `${APP_URL}:${APP_PORT}/api/problem/username-not-found`,
+          `${APP_URL}/api/users/authenticate`,
+          `${APP_URL}/api/problem/username-not-found`,
           "Username not found",
           `The username '${username}' does not exist`
         );
@@ -223,8 +254,8 @@ export class UserStore {
 
       if (!bcrypt.compareSync(password + BCRYPT_PEPPER, user.password_digest)) {
         throw new BadRequestError(
-          `${username}`,
-          `${APP_URL}:${APP_PORT}/api/problem/incorrect-password`,
+          `${APP_URL}/api/users/authenticate`,
+          `${APP_URL}/api/problem/incorrect-password`,
           "Password is incorrect",
           "The password you entered was incorrect, please try again"
         );
@@ -232,12 +263,21 @@ export class UserStore {
 
       return user;
     } catch (err) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
+      if (err instanceof BadRequestError) {
+        throw new BadRequestError(
+          err.instance,
+          err.type,
+          err.title,
+          err.detail
+        );
+      } else {
+        const timestamp = moment().format(MOMENT_FORMAT);
+        const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+        logger.error(timestamp, errString);
 
-      throw new DatabaseError();
+        throw new DatabaseError();
+      }
     }
   }
 }
