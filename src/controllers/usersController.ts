@@ -43,18 +43,33 @@ export const create = async (
   try {
     const user: User = {
       username: req.body.username,
-      emailAddress: req.body.emailAddress,
+      email_address: req.body.email_address,
       password: req.body.password,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      roleId: req.body.roleId
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      role_id: req.body.role_id
     };
 
     const newUser = await store.create(user);
+    console.log(newUser);
 
-    const token = jwt.sign({ user: newUser }, JWT_SECRET as string);
+    // old token .. remove once verified working
+    // const token = jwt.sign({ user: newUser }, JWT_SECRET as string);
+    // res.status(201).json(token);
 
-    res.status(201).json(token);
+    const token = jwt.sign(
+      {
+        username: newUser.username,
+        role_id: newUser.role_id
+      },
+      JWT_SECRET as string
+    );
+
+    res.status(201).json({
+      username: newUser.username,
+      role_id: newUser.role_id,
+      jwt: token
+    });
   } catch (err) {
     next(err);
   }
@@ -69,11 +84,11 @@ export const update = async (
     const user: User = {
       id: Number(req.params.id),
       username: req.body.username,
-      emailAddress: req.body.emailAddress,
+      email_address: req.body.email_address,
       password: req.body.password,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      roleId: req.body.roleId
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      role_id: req.body.role_id
     };
 
     const updatedUser = await store.update(user);
@@ -113,6 +128,7 @@ export const authenticate = async (
       user.username,
       user.password
     );
+
     const token = jwt.sign({ user: authenticatedUser }, JWT_SECRET as string);
 
     res.status(200).json(token);

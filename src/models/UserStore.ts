@@ -13,11 +13,11 @@ const logger = new Logger("database_errors.txt");
 export interface User {
   id?: number;
   username: string;
-  emailAddress: string;
+  email_address: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  roleId: number;
+  first_name: string;
+  last_name: string;
+  role_id: number;
 }
 
 export class UserStore {
@@ -108,18 +108,19 @@ export class UserStore {
           *
       `;
 
-      const passwordDigest = bcrypt.hashSync(
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const password_digest = bcrypt.hashSync(
         user.password + BCRYPT_PEPPER,
         parseInt(SALT_ROUNDS as string, 10)
       );
 
       const result = await connection.query(sql, [
         user.username,
-        user.emailAddress,
-        passwordDigest,
-        user.firstName,
-        user.lastName,
-        user.roleId
+        user.email_address,
+        password_digest,
+        user.first_name,
+        user.last_name,
+        user.role_id
       ]);
 
       connection.release();
@@ -155,11 +156,11 @@ export class UserStore {
       `;
       const result = await connection.query(sql, [
         user.username,
-        user.emailAddress,
+        user.email_address,
         user.password,
-        user.firstName,
-        user.lastName,
-        user.roleId,
+        user.first_name,
+        user.last_name,
+        user.role_id,
         user.id
       ]);
 
