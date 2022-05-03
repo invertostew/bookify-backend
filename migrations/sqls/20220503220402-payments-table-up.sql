@@ -1,0 +1,3 @@
+CREATE TABLE payments (
+  id SERIAL PRIMARY KEY
+);
