@@ -1,38 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 
-const isSuperUser = (req: Request, res: Response, next: NextFunction) => {
-  // ...
+import UnauthorisedError from "../classes/base_errors/user_facing_errors/UnauthorisedError";
+
+const { APP_URL } = process.env;
+
+const isSuperUser = (req: Request, res: Response, next: NextFunction): void => {
+  const { user } = res.locals;
+
+  // change this implementation later to query the db for "superuser"
+  if (user.role_id !== 3) {
+    throw new UnauthorisedError(
+      `${req.baseUrl}${req.path}`,
+      `${APP_URL}/api/problem/unauthorised`,
+      "User not authorised",
+      "You must be a super user to access this resource"
+    );
+  }
+
+  next();
 };
 
 export default isSuperUser;
-
-
-
-
-// const update = async (req: Request, res: Response) => {
-//     const user: User = {
-//         id: parseInt(req.params.id),
-//         username: req.body.username,
-//         password: req.body.password,
-//     }
-//     try {
-//         const authorizationHeader = req.headers.authorization
-//         const token = authorizationHeader.split(' ')[1]
-//         const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
-//         if(decoded.id !== user.id) {
-//             throw new Error('User id does not match!')
-//         }
-//     } catch(err) {
-//         res.status(401)
-//         res.json(err)
-//         return
-//     }
-
-//     try {
-//         const updated = await store.create(user)
-//         res.json(updated)
-//     } catch(err) {
-//         res.status(400)
-//         res.json(err + user)
-//     }
-// }

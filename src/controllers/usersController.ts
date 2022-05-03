@@ -51,25 +51,16 @@ export const create = async (
     };
 
     const newUser = await store.create(user);
-    console.log(newUser);
-
-    // old token .. remove once verified working
-    // const token = jwt.sign({ user: newUser }, JWT_SECRET as string);
-    // res.status(201).json(token);
 
     const token = jwt.sign(
       {
-        username: newUser.username,
+        user_id: newUser.id,
         role_id: newUser.role_id
       },
       JWT_SECRET as string
     );
 
-    res.status(201).json({
-      username: newUser.username,
-      role_id: newUser.role_id,
-      jwt: token
-    });
+    res.status(201).json({ token });
   } catch (err) {
     next(err);
   }
@@ -129,25 +120,15 @@ export const authenticate = async (
       user.password
     );
 
-    console.log("authenticated user", authenticatedUser);
-
-    // old token...
-    // const token = jwt.sign({ user: authenticatedUser }, JWT_SECRET as string);
-    // res.status(200).json(token);
-
     const token = jwt.sign(
       {
-        username: authenticatedUser.username,
+        user_id: authenticatedUser.id,
         role_id: authenticatedUser.role_id
       },
       JWT_SECRET as string
     );
 
-    res.status(200).json({
-      username: authenticatedUser.username,
-      role_id: authenticatedUser.role_id,
-      jwt: token
-    });
+    res.status(200).json({ token });
   } catch (err) {
     next(err);
   }

@@ -7,7 +7,9 @@ class Logger {
   private LOG_DIR_PATH = path.join(__dirname, "..", "..", "..", "logs");
 
   constructor(filename: string) {
-    // may come back later if time to add check for dir exist, and create if not...
+    if (!fs.existsSync(this.LOG_DIR_PATH)) {
+      fs.mkdirSync(this.LOG_DIR_PATH);
+    }
 
     this.writeStream = fs.createWriteStream(
       `${this.LOG_DIR_PATH}/${filename}`,
@@ -17,6 +19,11 @@ class Logger {
 
   public error(timestamp: string, errString: string) {
     const message = `[ERROR]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${errString}\r\n\n`;
+    this.writeToLog(message);
+  }
+
+  public debug(timestamp: string, debugString: string) {
+    const message = `[DEBUG]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${debugString}\r\n\n`;
     this.writeToLog(message);
   }
 

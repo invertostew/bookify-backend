@@ -5,7 +5,11 @@ import UnauthorisedError from "../classes/base_errors/user_facing_errors/Unautho
 
 const { JWT_SECRET, APP_URL } = process.env;
 
-const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyAuthToken = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   try {
     const authorizationHeader = req.headers.authorization;
     const token = authorizationHeader?.split(" ")[1] || "";
@@ -13,12 +17,10 @@ const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
 
     res.locals.user = decoded;
 
-    // console.log(res.locals.user);
-
     next();
   } catch (err) {
     throw new UnauthorisedError(
-      `${APP_URL}/${req.baseUrl}${req.path}`,
+      `${req.baseUrl}${req.path}`,
       `${APP_URL}/api/problem/unauthorised`,
       "User not authorised",
       "You must be logged in to access this resource"

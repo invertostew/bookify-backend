@@ -103,13 +103,12 @@ export class UserStore {
           $3,
           $4,
           $5,
-          $6
+          (SELECT id FROM roles WHERE role = $6)
         ) RETURNING
           *
       `;
 
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const password_digest = bcrypt.hashSync(
+      const hashedPassword = bcrypt.hashSync(
         user.password + BCRYPT_PEPPER,
         parseInt(SALT_ROUNDS as string, 10)
       );
@@ -117,10 +116,10 @@ export class UserStore {
       const result = await connection.query(sql, [
         user.username,
         user.email_address,
-        password_digest,
+        hashedPassword,
         user.first_name,
         user.last_name,
-        user.role_id
+        "superuser"
       ]);
 
       connection.release();
@@ -234,8 +233,8 @@ export class UserStore {
       const connection = await pool.connect();
       const sql = `
         SELECT
+          id,
           password_digest,
-          username,
           role_id
         FROM
           ${this.DATABASE_TABLE}
