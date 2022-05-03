@@ -6,7 +6,7 @@ import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 
 const { APP_URL, MOMENT_FORMAT } = process.env;
-const logger = new Logger("database_errors.txt");
+const databaseErrorLogger = new Logger("database_errors.txt");
 
 export interface Role {
   id?: number;
@@ -30,11 +30,10 @@ export class RoleStore {
       connection.release();
 
       return result.rows;
-    } catch (err) {
+    } catch (err: unknown) {
       const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+      databaseErrorLogger.error(timestamp, err);
 
       throw new DatabaseError();
     }
@@ -65,14 +64,13 @@ export class RoleStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }
@@ -95,11 +93,10 @@ export class RoleStore {
       connection.release();
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+      databaseErrorLogger.error(timestamp, err);
 
       throw new DatabaseError();
     }
@@ -132,14 +129,13 @@ export class RoleStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }
@@ -171,14 +167,13 @@ export class RoleStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }

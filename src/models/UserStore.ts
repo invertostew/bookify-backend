@@ -1,3 +1,4 @@
+import { DatabaseError as pgDatabaseError } from "pg";
 import moment from "moment";
 import bcrypt from "bcrypt";
 
@@ -6,9 +7,11 @@ import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
+import ValidationError from "../classes/base_errors/database_errors/ValidationError";
 
 const { APP_URL, MOMENT_FORMAT, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
-const logger = new Logger("database_errors.txt");
+const databaseErrorLogger = new Logger("database_errors.txt");
+const databaseDebugLogger = new Logger("database_debug.txt");
 
 export interface User {
   id?: number;
@@ -37,11 +40,10 @@ export class UserStore {
       connection.release();
 
       return result.rows;
-    } catch (err) {
+    } catch (err: unknown) {
       const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+      databaseErrorLogger.error(timestamp, err);
 
       throw new DatabaseError();
     }
@@ -72,14 +74,13 @@ export class UserStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }
@@ -125,11 +126,16 @@ export class UserStore {
       connection.release();
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       const timestamp = moment().format(MOMENT_FORMAT);
-      const errString = JSON.stringify(err);
 
-      logger.error(timestamp, errString);
+      if (err instanceof pgDatabaseError) {
+        databaseDebugLogger.debug(timestamp, err.message);
+
+        throw new ValidationError(err);
+      }
+
+      databaseErrorLogger.error(timestamp, err);
 
       throw new DatabaseError();
     }
@@ -175,14 +181,13 @@ export class UserStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }
@@ -214,14 +219,13 @@ export class UserStore {
       }
 
       return result.rows[0];
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }
@@ -264,7 +268,7 @@ export class UserStore {
       }
 
       return user;
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof BadRequestError) {
         throw new BadRequestError(
           err.instance,
@@ -274,9 +278,8 @@ export class UserStore {
         );
       } else {
         const timestamp = moment().format(MOMENT_FORMAT);
-        const errString = JSON.stringify(err);
 
-        logger.error(timestamp, errString);
+        databaseErrorLogger.error(timestamp, err);
 
         throw new DatabaseError();
       }

@@ -17,14 +17,14 @@ class Logger {
     );
   }
 
-  public error(timestamp: string, errString: string) {
-    const message = `[ERROR]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${errString}\r\n\n`;
-    this.writeToLog(message);
+  public error(timestamp: string, err: unknown) {
+    const errorMessage = `[ERROR]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${err}\r\n\n`;
+    this.writeToLog(errorMessage);
   }
 
-  public debug(timestamp: string, debugString: string) {
-    const message = `[DEBUG]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${debugString}\r\n\n`;
-    this.writeToLog(message);
+  public debug(timestamp: string, message: unknown) {
+    const debugMessage = `[DEBUG]\r\n\tTimestamp: ${timestamp}\r\n\tDebug: ${message}\r\n\n`;
+    this.writeToLog(debugMessage);
   }
 
   private writeToLog(message: string) {
