@@ -120,7 +120,7 @@ export class UserStore {
         hashedPassword,
         user.first_name,
         user.last_name,
-        "superuser"
+        "user"
       ]);
 
       connection.release();
