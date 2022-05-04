@@ -6,16 +6,19 @@ import isSuperUser from "../middlewares/isSuperUser";
 
 const rolesRouter: Router = express.Router();
 
-const ROLES_ROUTER_MIDDLEWARE = [verifyAuthToken, isSuperUser];
+const middlewares = [verifyAuthToken, isSuperUser];
 
-rolesRouter.use("/", ROLES_ROUTER_MIDDLEWARE);
+rolesRouter
+  .route("/")
+  .get(middlewares, rolesController.index)
+  .post(middlewares, rolesController.create);
 
-rolesRouter.route("/").get(rolesController.index).post(rolesController.create);
-
+// come back and add check to only allow viewing of same role unless superuser
+// but for now, leave open for front-end calls
 rolesRouter
   .route("/:id")
   .get(rolesController.show)
-  .put(rolesController.update)
-  .delete(rolesController.destroy);
+  .put(middlewares, rolesController.update)
+  .delete(middlewares, rolesController.destroy);
 
 export default rolesRouter;

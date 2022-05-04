@@ -1,11 +1,19 @@
 import express, { Router } from "express";
 
 import * as usersController from "../controllers/usersController";
+import verifyAuthToken from "../middlewares/verifyAuthToken";
+import isSuperUser from "../middlewares/isSuperUser";
 
 const usersRouter: Router = express.Router();
 
-usersRouter.route("/").get(usersController.index).post(usersController.create);
+const middlewares = [verifyAuthToken, isSuperUser];
 
+usersRouter
+  .route("/")
+  .get(middlewares, usersController.index)
+  .post(usersController.create);
+
+// come back and ensure can only show, update or destroy their own user
 usersRouter
   .route("/:id")
   .get(usersController.show)
