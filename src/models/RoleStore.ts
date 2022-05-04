@@ -1,12 +1,10 @@
-import moment from "moment";
-
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 
-const { APP_URL, MOMENT_FORMAT } = process.env;
-const databaseErrorLogger = new Logger("database_errors.txt");
+const { APP_URL } = process.env;
+const logger = new Logger("database_logs.txt");
 
 export interface Role {
   id?: number;
@@ -31,9 +29,7 @@ export class RoleStore {
 
       return result.rows;
     } catch (err: unknown) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-
-      databaseErrorLogger.error(timestamp, err);
+      logger.error(err);
 
       throw new DatabaseError();
     }
@@ -67,13 +63,11 @@ export class RoleStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 
@@ -94,9 +88,7 @@ export class RoleStore {
 
       return result.rows[0];
     } catch (err: unknown) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-
-      databaseErrorLogger.error(timestamp, err);
+      logger.error(err);
 
       throw new DatabaseError();
     }
@@ -132,13 +124,11 @@ export class RoleStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 
@@ -170,13 +160,11 @@ export class RoleStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 }

@@ -1,6 +1,10 @@
 import path from "path";
 import fs from "fs";
 
+import moment from "moment";
+
+const { MOMENT_FORMAT } = process.env;
+
 class Logger {
   public writeStream: fs.WriteStream;
 
@@ -17,13 +21,15 @@ class Logger {
     );
   }
 
-  public error(timestamp: string, err: unknown) {
+  public error(err: unknown) {
+    const timestamp = moment().format(MOMENT_FORMAT);
     const errorMessage = `[ERROR]\r\n\tTimestamp: ${timestamp}\r\n\tError: ${err}\r\n\n`;
     this.writeToLog(errorMessage);
   }
 
-  public debug(timestamp: string, message: unknown) {
-    const debugMessage = `[DEBUG]\r\n\tTimestamp: ${timestamp}\r\n\tDebug: ${message}\r\n\n`;
+  public debug(message: unknown) {
+    const timestamp = moment().format(MOMENT_FORMAT);
+    const debugMessage = `[DEBUG]\r\n\tTimestamp: ${timestamp}\r\n\tMessage: ${message}\r\n\n`;
     this.writeToLog(debugMessage);
   }
 

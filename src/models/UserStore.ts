@@ -1,5 +1,4 @@
-import { DatabaseError as pgDatabaseError } from "pg";
-import moment from "moment";
+import { DatabaseError as PostgresDatabaseError } from "pg";
 import bcrypt from "bcrypt";
 
 import pool from "../database";
@@ -9,9 +8,8 @@ import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundErr
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 import ValidationError from "../classes/base_errors/database_errors/ValidationError";
 
-const { APP_URL, MOMENT_FORMAT, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
-const databaseErrorLogger = new Logger("database_errors.txt");
-const databaseDebugLogger = new Logger("database_debug.txt");
+const { APP_URL, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
+const logger = new Logger("database_logs.txt");
 
 export interface User {
   id?: number;
@@ -41,9 +39,7 @@ export class UserStore {
 
       return result.rows;
     } catch (err: unknown) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-
-      databaseErrorLogger.error(timestamp, err);
+      logger.error(err);
 
       throw new DatabaseError();
     }
@@ -77,13 +73,11 @@ export class UserStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 
@@ -120,22 +114,20 @@ export class UserStore {
         hashedPassword,
         user.first_name,
         user.last_name,
-        "user"
+        "customer"
       ]);
 
       connection.release();
 
       return result.rows[0];
     } catch (err: unknown) {
-      const timestamp = moment().format(MOMENT_FORMAT);
-
-      if (err instanceof pgDatabaseError) {
-        databaseDebugLogger.debug(timestamp, err.message);
+      if (err instanceof PostgresDatabaseError) {
+        logger.debug(err.message);
 
         throw new ValidationError(err);
       }
 
-      databaseErrorLogger.error(timestamp, err);
+      logger.error(err);
 
       throw new DatabaseError();
     }
@@ -184,13 +176,11 @@ export class UserStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 
@@ -222,13 +212,11 @@ export class UserStore {
     } catch (err: unknown) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 
@@ -276,13 +264,11 @@ export class UserStore {
           err.title,
           err.detail
         );
-      } else {
-        const timestamp = moment().format(MOMENT_FORMAT);
-
-        databaseErrorLogger.error(timestamp, err);
-
-        throw new DatabaseError();
       }
+
+      logger.error(err);
+
+      throw new DatabaseError();
     }
   }
 }
