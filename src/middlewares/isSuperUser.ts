@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import moment from "moment";
 
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import UnauthorisedError from "../classes/base_errors/user_facing_errors/UnauthorisedError";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 
-const { APP_URL, MOMENT_FORMAT } = process.env;
-const databaseErrorLogger = new Logger("database_errors.txt");
+const { APP_URL } = process.env;
+const logger = new Logger("database_logs.txt");
 
 const isSuperUser = async (
   req: Request,
@@ -41,9 +40,7 @@ const isSuperUser = async (
 
     next();
   } catch (err) {
-    const timestamp = moment().format(MOMENT_FORMAT);
-
-    databaseErrorLogger.error(timestamp, err);
+    logger.error(err);
 
     throw new DatabaseError();
   }
