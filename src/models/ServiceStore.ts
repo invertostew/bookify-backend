@@ -12,6 +12,7 @@ export interface Service {
   description: string;
   duration: number;
   price: number;
+  calendar_id: number;
 }
 
 export class ServiceStore {
@@ -82,12 +83,14 @@ export class ServiceStore {
           title,
           description,
           duration,
-          price
+          price,
+          calendar_id
         ) VALUES (
           $1,
           $2,
           $3,
-          $4
+          $4,
+          $5
         ) RETURNING
           *
       `;
@@ -95,7 +98,8 @@ export class ServiceStore {
         service.title,
         service.description,
         service.duration,
-        service.price
+        service.price,
+        service.calendar_id
       ]);
 
       connection.release();
@@ -118,9 +122,10 @@ export class ServiceStore {
           title = $1,
           description = $2,
           duration = $3,
-          price = $4
+          price = $4,
+          calendar_id = $5
         WHERE
-          id = $5
+          id = $6
         RETURNING
           *
       `;
@@ -129,6 +134,7 @@ export class ServiceStore {
         service.description,
         service.duration,
         service.price,
+        service.calendar_id,
         service.id
       ]);
 

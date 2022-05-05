@@ -42,7 +42,8 @@ export const create = async (
       title: req.body.title,
       description: req.body.description,
       duration: req.body.duration,
-      price: req.body.price
+      price: req.body.price,
+      calendar_id: req.body.calendar_id
     };
 
     const newService = await store.create(service);
@@ -63,7 +64,8 @@ export const update = async (
       title: req.body.title,
       description: req.body.description,
       duration: req.body.duration,
-      price: req.body.price
+      price: req.body.price,
+      calendar_id: req.body.calendar_id
     };
 
     const updatedService = await store.update(service);
