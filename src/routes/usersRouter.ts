@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import * as usersController from "../controllers/usersController";
 import verifyAuthToken from "../middlewares/verifyAuthToken";
 import isSuperUser from "../middlewares/isSuperUser";
+import belongsToUser from "../middlewares/belongsToUser";
 
 const usersRouter: Router = express.Router();
 
@@ -16,9 +17,9 @@ usersRouter
 // come back and ensure can only show, update or destroy their own user
 usersRouter
   .route("/:id")
-  .get(usersController.show)
-  .put(usersController.update)
-  .delete(usersController.destroy);
+  .get(verifyAuthToken, belongsToUser, usersController.show)
+  .put(verifyAuthToken, belongsToUser, usersController.update)
+  .delete(verifyAuthToken, belongsToUser, usersController.destroy);
 
 // eslint-disable-next-line prettier/prettier
 usersRouter

@@ -13,7 +13,7 @@ const isSuperUser = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { user } = res.locals;
+  const { decoded } = res.locals;
 
   try {
     const connection = await pool.connect();
@@ -25,7 +25,7 @@ const isSuperUser = async (
       WHERE
         id = $1
     `;
-    const result = await connection.query(sql, [user.role_id]);
+    const result = await connection.query(sql, [decoded.role_id]);
 
     connection.release();
 
@@ -40,6 +40,15 @@ const isSuperUser = async (
 
     next();
   } catch (err) {
+    if (err instanceof UnauthorisedError) {
+      throw new UnauthorisedError(
+        err.instance,
+        err.type,
+        err.title,
+        err.detail
+      );
+    }
+
     logger.error(err);
 
     throw new DatabaseError();

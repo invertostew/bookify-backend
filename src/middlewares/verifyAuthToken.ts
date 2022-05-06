@@ -15,7 +15,7 @@ const verifyAuthToken = (
     const token = authorizationHeader?.split(" ")[1] || "";
     const decoded = jwt.verify(token, JWT_SECRET as string);
 
-    res.locals.user = decoded;
+    res.locals.decoded = decoded;
 
     next();
   } catch (err) {
