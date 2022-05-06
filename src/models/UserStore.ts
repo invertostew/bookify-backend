@@ -274,6 +274,43 @@ export class UserStore {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  public async listUserCalendars(userId: number): Promise<Calendar[]> {
+    try {
+      const connection = await pool.connect();
+      const sql = `
+        SELECT
+          *
+        FROM
+          calendars
+        WHERE
+          user_id = $1 
+      `;
+      const result = await connection.query(sql, [userId]);
+
+      connection.release();
+
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/users/${userId}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no user with id '${userId}'`
+        );
+      }
+
+      return result.rows;
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      }
+
+      logger.error(err);
+
+      throw new DatabaseError();
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   public async showUserCalendar(
     userId: number,
     calendarId: number
@@ -294,11 +331,21 @@ export class UserStore {
 
       connection.release();
 
-      // handle no user
-      // handle no calendar
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/users/${userId}`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `There is no calendar with id '${calendarId}' associated with user id '${userId}'`
+        );
+      }
 
       return result.rows[0];
     } catch (err: unknown) {
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      }
+
       logger.error(err);
 
       throw new DatabaseError();

@@ -134,6 +134,20 @@ export const authenticate = async (
   }
 };
 
+export const listUserCalendars = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const calendars = await store.listUserCalendars(Number(req.params.id));
+
+    res.status(200).json(calendars);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const showUserCalendar = async (
   req: Request,
   res: Response,
