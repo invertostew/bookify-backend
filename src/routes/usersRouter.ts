@@ -20,6 +20,13 @@ usersRouter
   .put(usersController.update)
   .delete(usersController.destroy);
 
-usersRouter.post("/authenticate", usersController.authenticate);
+// eslint-disable-next-line prettier/prettier
+usersRouter
+  .route("/authenticate")
+  .post(usersController.authenticate);
+
+usersRouter
+  .route("/:id/calendars/:calendarId")
+  .get(usersController.showUserCalendar);
 
 export default usersRouter;

@@ -2,6 +2,7 @@ import pool from "../database";
 import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
+import { Service } from "./ServiceStore";
 
 const { APP_URL } = process.env;
 const logger = new Logger("database_logs.txt");
@@ -169,6 +170,43 @@ export class CalendarStore {
 
       return result.rows[0];
     } catch (err: unknown) {
+      if (err instanceof NotFoundError) {
+        throw new NotFoundError(err.instance, err.type, err.title, err.detail);
+      }
+
+      logger.error(err);
+
+      throw new DatabaseError();
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public async listCalendarServices(calendarId: number): Promise<Service[]> {
+    try {
+      const connection = await pool.connect();
+      const sql = `
+        SELECT
+          *
+        FROM
+          services
+        WHERE
+          calendar_id = $1
+      `;
+      const result = await connection.query(sql, [calendarId]);
+
+      connection.release();
+
+      if (!result.rows[0]) {
+        throw new NotFoundError(
+          `${APP_URL}/api/calendars/${calendarId}/services`,
+          `${APP_URL}/api/problem/entity-not-found`,
+          "Entity not found",
+          `Calendar with id '${calendarId}' has no services`
+        );
+      }
+
+      return result.rows;
+    } catch (err) {
       if (err instanceof NotFoundError) {
         throw new NotFoundError(err.instance, err.type, err.title, err.detail);
       }

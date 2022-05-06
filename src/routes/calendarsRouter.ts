@@ -15,4 +15,8 @@ calendarsRouter
   .put(calendarsController.update)
   .delete(calendarsController.destroy);
 
+calendarsRouter
+  .route("/:id/services")
+  .get(calendarsController.listCalendarServices);
+
 export default calendarsRouter;

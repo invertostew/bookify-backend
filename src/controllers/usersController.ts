@@ -133,3 +133,20 @@ export const authenticate = async (
     next(err);
   }
 };
+
+export const showUserCalendar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const calendar = await store.showUserCalendar(
+      Number(req.params.id),
+      Number(req.params.calendarId)
+    );
+
+    res.status(200).json(calendar);
+  } catch (err) {
+    next(err);
+  }
+};

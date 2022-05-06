@@ -7,6 +7,7 @@ import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 import ValidationError from "../classes/base_errors/database_errors/ValidationError";
+import { Calendar } from "./CalendarStore";
 
 const { APP_URL, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
 const logger = new Logger("database_logs.txt");
@@ -266,6 +267,38 @@ export class UserStore {
         );
       }
 
+      logger.error(err);
+
+      throw new DatabaseError();
+    }
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public async showUserCalendar(
+    userId: number,
+    calendarId: number
+  ): Promise<Calendar> {
+    try {
+      const connection = await pool.connect();
+      const sql = `
+        SELECT
+          *
+        FROM
+          calendars
+        WHERE
+          user_id = $1
+        AND
+          id = $2
+      `;
+      const result = await connection.query(sql, [userId, calendarId]);
+
+      connection.release();
+
+      // handle no user
+      // handle no calendar
+
+      return result.rows[0];
+    } catch (err: unknown) {
       logger.error(err);
 
       throw new DatabaseError();

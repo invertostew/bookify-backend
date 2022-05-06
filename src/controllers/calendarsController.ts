@@ -84,3 +84,19 @@ export const destroy = async (
     next(err);
   }
 };
+
+export const listCalendarServices = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const calendarServices = await store.listCalendarServices(
+      Number(req.params.id)
+    );
+
+    res.status(200).json(calendarServices);
+  } catch (err) {
+    next(err);
+  }
+};
