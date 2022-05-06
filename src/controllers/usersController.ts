@@ -46,11 +46,10 @@ export const create = async (
       email_address: req.body.email_address,
       password: req.body.password,
       first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      role_id: req.body.role_id
+      last_name: req.body.last_name
     };
 
-    const newUser = await store.create(user);
+    const newUser = await store.create(user, req.body.role_name);
 
     const token = jwt.sign(
       {

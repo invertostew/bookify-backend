@@ -19,7 +19,7 @@ export interface User {
   password: string;
   first_name: string;
   last_name: string;
-  role_id: number;
+  role_id?: number;
 }
 
 export class UserStore {
@@ -82,7 +82,7 @@ export class UserStore {
     }
   }
 
-  public async create(user: User): Promise<User> {
+  public async create(user: User, role_name: string): Promise<User> {
     try {
       const connection = await pool.connect();
       const sql = `
@@ -115,7 +115,7 @@ export class UserStore {
         hashedPassword,
         user.first_name,
         user.last_name,
-        "customer"
+        role_name
       ]);
 
       connection.release();
