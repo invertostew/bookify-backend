@@ -19,4 +19,8 @@ calendarsRouter
   .route("/:id/services")
   .get(calendarsController.listCalendarServices);
 
+calendarsRouter
+  .route("/:id/bookings")
+  .get(calendarsController.listCalendarBookings);
+
 export default calendarsRouter;

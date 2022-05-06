@@ -334,8 +334,8 @@ export class UserStore {
       if (!result.rows[0]) {
         throw new NotFoundError(
           `${APP_URL}/api/users/${userId}`,
-          `${APP_URL}/api/problem/entity-not-found`,
-          "Entity not found",
+          `${APP_URL}/api/problem/association-not-found`,
+          "Association not found",
           `There is no calendar with id '${calendarId}' associated with user id '${userId}'`
         );
       }

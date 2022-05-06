@@ -100,3 +100,19 @@ export const listCalendarServices = async (
     next(err);
   }
 };
+
+export const listCalendarBookings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const calendarBookings = await store.listCalendarBookings(
+      Number(req.params.id)
+    );
+
+    res.status(200).send(calendarBookings);
+  } catch (err) {
+    next(err);
+  }
+};
