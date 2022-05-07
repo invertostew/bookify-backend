@@ -222,6 +222,7 @@ export class CalendarStore {
   public async listCalendarBookings(calendarId: number): Promise<Booking[]> {
     try {
       const connection = await pool.connect();
+      // this is the format that React Scheduler requires: startDate, endDate, title
       const sql = `
         SELECT
           booking as "startDate",
