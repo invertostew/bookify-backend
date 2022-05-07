@@ -146,19 +146,24 @@ export class UserStore {
           password_digest = $3,
           first_name = $4,
           last_name = $5,
-          role_id = $6
+          role_id = (SELECT role_id FROM users WHERE id = $6)
         WHERE
-          id = $7
+          id = $6
         RETURNING
           *
       `;
+
+      const hashedPassword = bcrypt.hashSync(
+        user.password + BCRYPT_PEPPER,
+        parseInt(SALT_ROUNDS as string, 10)
+      );
+
       const result = await connection.query(sql, [
         user.username,
         user.email_address,
-        user.password,
+        hashedPassword,
         user.first_name,
         user.last_name,
-        user.role_id,
         user.id
       ]);
 
