@@ -224,8 +224,8 @@ export class CalendarStore {
       const connection = await pool.connect();
       const sql = `
         SELECT
-          booking as startDate,
-          (SELECT booking + (duration ||' minutes')::interval as endDate),
+          booking as "startDate",
+          (SELECT booking + (duration ||' minutes')::interval as "endDate"),
           services.title
         FROM
           bookings
