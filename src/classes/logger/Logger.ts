@@ -3,7 +3,7 @@ import fs from "fs";
 
 import moment from "moment";
 
-const { MOMENT_FORMAT } = process.env;
+const MOMENT_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 class Logger {
   public writeStream: fs.WriteStream;

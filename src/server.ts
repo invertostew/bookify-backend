@@ -10,8 +10,7 @@ if (
   !process.env.POSTGRES_DB ||
   !process.env.BCRYPT_PEPPER ||
   !process.env.SALT_ROUNDS ||
-  !process.env.JWT_SECRET ||
-  !process.env.MOMENT_FORMAT
+  !process.env.JWT_SECRET
 ) {
   throw new Error(
     "Application failed to start. Ensure necessary environment variables are set."
