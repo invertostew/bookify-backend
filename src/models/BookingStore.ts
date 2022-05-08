@@ -8,7 +8,7 @@ const logger = new Logger("database_logs.txt");
 
 export interface Booking {
   id?: number;
-  booking: number;
+  booking: string;
   user_id: number;
   service_id: number;
   payment_id: number;

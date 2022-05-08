@@ -38,7 +38,8 @@
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "stripe": "^8.222.0"
   },
   "scripts": {
     "test": "jest",
