@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 import UnauthorisedError from "../classes/base_errors/user_facing_errors/UnauthorisedError";
 
-const { JWT_SECRET, APP_URL } = process.env;
+const { JWT_SECRET, SERVER_URL } = process.env;
 
 const verifyAuthToken = (
   req: Request,
@@ -21,7 +21,7 @@ const verifyAuthToken = (
   } catch (err) {
     throw new UnauthorisedError(
       `${req.baseUrl}${req.path}`,
-      `${APP_URL}/api/problem/unauthorised`,
+      `${SERVER_URL}/api/problem/unauthorised`,
       "User not authorised",
       "You must be logged in to access this resource"
     );

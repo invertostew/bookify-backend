@@ -3,7 +3,7 @@ import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 
-const { APP_URL } = process.env;
+const { SERVER_URL } = process.env;
 const logger = new Logger("database_logs.txt");
 
 export interface Booking {
@@ -55,8 +55,8 @@ export class BookingStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/bookings/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/bookings/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no booking with id '${id}'`
         );
@@ -136,8 +136,8 @@ export class BookingStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/bookings/${booking.id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/bookings/${booking.id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no booking with id '${booking.id}'`
         );
@@ -172,8 +172,8 @@ export class BookingStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/bookings/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/bookings/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no booking with id '${id}'`
         );

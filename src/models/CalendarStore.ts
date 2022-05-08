@@ -5,7 +5,7 @@ import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundErr
 import { Service } from "./ServiceStore";
 import { Booking } from "./BookingStore";
 
-const { APP_URL } = process.env;
+const { SERVER_URL } = process.env;
 const logger = new Logger("database_logs.txt");
 
 export interface Calendar {
@@ -55,8 +55,8 @@ export class CalendarStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/calendars/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/calendars/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no calendar with id '${id}'`
         );
@@ -126,8 +126,8 @@ export class CalendarStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/calendars/${calendar.id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/calendars/${calendar.id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no calendar with id '${calendar.id}'`
         );
@@ -162,8 +162,8 @@ export class CalendarStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/calendars/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/calendars/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no calendar with id '${id}'`
         );
@@ -199,8 +199,8 @@ export class CalendarStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/calendars/${calendarId}/services`,
-          `${APP_URL}/api/problem/association-not-found`,
+          `${SERVER_URL}/api/calendars/${calendarId}/services`,
+          `${SERVER_URL}/api/problem/association-not-found`,
           "Association not found",
           `Calendar with id '${calendarId}' has no associated services`
         );
@@ -243,8 +243,8 @@ export class CalendarStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/calendars/${calendarId}/bookings`,
-          `${APP_URL}/api/problem/association-not-found`,
+          `${SERVER_URL}/api/calendars/${calendarId}/bookings`,
+          `${SERVER_URL}/api/problem/association-not-found`,
           "Association not found",
           `Calendar with id '${calendarId}' has no associated bookings`
         );

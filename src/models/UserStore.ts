@@ -9,7 +9,7 @@ import BadRequestError from "../classes/base_errors/user_facing_errors/BadReques
 import ValidationError from "../classes/base_errors/database_errors/ValidationError";
 import { Calendar } from "./CalendarStore";
 
-const { APP_URL, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
+const { SERVER_URL, BCRYPT_PEPPER, SALT_ROUNDS } = process.env;
 const logger = new Logger("database_logs.txt");
 
 export interface User {
@@ -63,8 +63,8 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/users/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/users/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no user with id '${id}'`
         );
@@ -171,8 +171,8 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/users/${user.id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/users/${user.id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no user with id '${user.id}'`
         );
@@ -207,8 +207,8 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/users/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/users/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no user with id '${id}'`
         );
@@ -243,8 +243,8 @@ export class UserStore {
 
       if (!result.rows.length) {
         throw new BadRequestError(
-          `${APP_URL}/api/users/authenticate`,
-          `${APP_URL}/api/problem/username-not-found`,
+          `${SERVER_URL}/api/users/authenticate`,
+          `${SERVER_URL}/api/problem/username-not-found`,
           "Username not found",
           `The username '${username}' does not exist`
         );
@@ -254,8 +254,8 @@ export class UserStore {
 
       if (!bcrypt.compareSync(password + BCRYPT_PEPPER, user.password_digest)) {
         throw new BadRequestError(
-          `${APP_URL}/api/users/authenticate`,
-          `${APP_URL}/api/problem/incorrect-password`,
+          `${SERVER_URL}/api/users/authenticate`,
+          `${SERVER_URL}/api/problem/incorrect-password`,
           "Password is incorrect",
           "The password you entered was incorrect, please try again"
         );
@@ -296,8 +296,8 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/users/${userId}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/users/${userId}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no user with id '${userId}'`
         );
@@ -338,8 +338,8 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/users/${userId}`,
-          `${APP_URL}/api/problem/association-not-found`,
+          `${SERVER_URL}/api/users/${userId}`,
+          `${SERVER_URL}/api/problem/association-not-found`,
           "Association not found",
           `There is no calendar with id '${calendarId}' associated with user id '${userId}'`
         );

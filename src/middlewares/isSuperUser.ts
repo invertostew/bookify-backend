@@ -5,7 +5,7 @@ import Logger from "../classes/logger/Logger";
 import UnauthorisedError from "../classes/base_errors/user_facing_errors/UnauthorisedError";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 
-const { APP_URL } = process.env;
+const { SERVER_URL } = process.env;
 const logger = new Logger("database_logs.txt");
 
 const isSuperUser = async (
@@ -32,7 +32,7 @@ const isSuperUser = async (
     if (result.rows[0].role !== "superuser") {
       throw new UnauthorisedError(
         `${req.baseUrl}${req.path}`,
-        `${APP_URL}/api/problem/unauthorised`,
+        `${SERVER_URL}/api/problem/unauthorised`,
         "User not authorised",
         "You must be a super user to access this resource"
       );

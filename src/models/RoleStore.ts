@@ -3,7 +3,7 @@ import Logger from "../classes/logger/Logger";
 import DatabaseError from "../classes/base_errors/DatabaseError";
 import NotFoundError from "../classes/base_errors/user_facing_errors/NotFoundError";
 
-const { APP_URL } = process.env;
+const { SERVER_URL } = process.env;
 const logger = new Logger("database_logs.txt");
 
 export interface Role {
@@ -52,8 +52,8 @@ export class RoleStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/roles/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/roles/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no role with id '${id}'`
         );
@@ -113,8 +113,8 @@ export class RoleStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/roles/${role.id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/roles/${role.id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no role with id '${role.id}'`
         );
@@ -149,8 +149,8 @@ export class RoleStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${APP_URL}/api/roles/${id}`,
-          `${APP_URL}/api/problem/entity-not-found`,
+          `${SERVER_URL}/api/roles/${id}`,
+          `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
           `There is no role with id '${id}'`
         );

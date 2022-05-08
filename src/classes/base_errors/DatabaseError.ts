@@ -1,9 +1,9 @@
 import ApplicationError from "./ApplicationError";
 
-const { APP_URL } = process.env;
+const { SERVER_URL } = process.env;
 
 class DatabaseError extends ApplicationError {
-  private static DEFAULT_TYPE = `${APP_URL}/api/problem/failed-database-operation`;
+  private static DEFAULT_TYPE = `${SERVER_URL}/api/problem/failed-database-operation`;
 
   private static DEFAULT_TITLE = "Failed to perform database operation";
 

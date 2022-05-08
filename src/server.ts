@@ -2,7 +2,7 @@ import app from "./app";
 
 if (
   !process.env.ENV ||
-  !process.env.APP_URL ||
+  !process.env.SERVER_URL ||
   !process.env.POSTGRES_USER ||
   !process.env.POSTGRES_PASS ||
   !process.env.POSTGRES_HOST ||
@@ -18,8 +18,8 @@ if (
   );
 }
 
-const APP_PORT = process.env.APP_PORT || 4000;
+const SERVER_PORT = process.env.SERVER_PORT || 4000;
 
-app.listen(APP_PORT, (): void => {
-  console.log(`Server running on port ${APP_PORT} 🚀`);
+app.listen(SERVER_PORT, (): void => {
+  console.log(`Server running on port ${SERVER_PORT} 🚀`);
 });
