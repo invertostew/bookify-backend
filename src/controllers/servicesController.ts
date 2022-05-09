@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Service, ServiceStore } from "../models/ServiceStore";
+import poundsToPence from "../helpers/poundsToPence";
 
 const store = new ServiceStore();
 
@@ -42,7 +43,7 @@ export const create = async (
       title: req.body.title,
       description: req.body.description,
       duration: req.body.duration,
-      price: req.body.price,
+      price: poundsToPence(req.body.price),
       calendar_id: req.body.calendar_id
     };
 
