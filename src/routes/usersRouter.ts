@@ -7,14 +7,11 @@ import belongsToUser from "../middlewares/belongsToUser";
 
 const usersRouter: Router = express.Router();
 
-const middlewares = [verifyAuthToken, isSuperUser];
-
 usersRouter
   .route("/")
-  .get(middlewares, usersController.index)
+  .get(verifyAuthToken, isSuperUser, usersController.index)
   .post(usersController.create);
 
-// come back and ensure can only show, update or destroy their own user
 usersRouter
   .route("/:id")
   .get(verifyAuthToken, belongsToUser, usersController.show)

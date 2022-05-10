@@ -44,4 +44,32 @@ export class PaymentStore {
       throw new DatabaseError();
     }
   }
+
+  public async updatePaymentStatus(
+    paymentStatus: string,
+    id: number
+  ): Promise<Payment> {
+    try {
+      const connection = await pool.connect();
+      const sql = `
+        UPDATE
+          ${this.DATABASE_TABLE}
+        SET
+          payment_status = $1
+        WHERE
+          id = $2
+      `;
+      const result = await pool.query(sql, [paymentStatus, id]);
+
+      connection.release();
+
+      // throw 404 if paymentid not valid...
+
+      return result.rows[0];
+    } catch (err: unknown) {
+      logger.error(err);
+
+      throw new DatabaseError();
+    }
+  }
 }

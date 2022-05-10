@@ -8,6 +8,8 @@ import bookingsRouter from "./bookingsRouter";
 
 const apiRouter: Router = express.Router();
 
+apiRouter.use(express.json());
+
 apiRouter.get("/", (_req: Request, res: Response) => {
   res.send("You have reached the API");
 });

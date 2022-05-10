@@ -1,138 +1,131 @@
-import Stripe from "stripe";
 import { Request, Response, NextFunction } from "express";
 
-import { User, UserStore } from "../models/UserStore";
-import { Service, ServiceStore } from "../models/ServiceStore";
-import { Payment, PaymentStore } from "../models/PaymentStore";
-import { Booking, BookingStore } from "../models/BookingStore";
+import stripeApi from "../helpers/stripe/stripeApi";
+import createBooking from "../helpers/stripe/createBooking";
+import createCheckoutSession from "../helpers/stripe/createCheckoutSession";
+import createPayment from "../helpers/stripe/createPayment";
+import updateBookingPaymentId from "../helpers/stripe/updateBookingPaymentId";
+import updatePaymentStatus from "../helpers/stripe/updatePaymentStatus";
+
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 import Logger from "../classes/logger/Logger";
 
-const { STRIPE_SECRET_KEY, CLIENT_URL, STRIPE_ENDPOINT_SECRET } = process.env;
-
-const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
-  apiVersion: "2020-08-27"
-});
-
-const userStore = new UserStore();
-const serviceStore = new ServiceStore();
-const paymentStore = new PaymentStore();
-const bookingStore = new BookingStore();
-
 const logger = new Logger("stripe_logs.txt");
 
-export const createCheckoutSession = async (
+export const stripeCheckoutSession = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  let user!: User;
-  let service!: Service;
+): Promise<void> => {
+  const { booking, user_id: userId, service_id: serviceId } = req.body;
 
-  try {
-    user = await userStore.show(Number(req.body.user_id));
-  } catch (err) {
-    next(err);
+  if (!booking || !userId || !serviceId) {
+    throw new BadRequestError("instance", "type", "title", "detail");
   }
 
   try {
-    service = await serviceStore.show(Number(req.body.service_id));
-  } catch (err) {
-    next(err);
-  }
+    // initial booking with no payment_id
+    const initialBooking = await createBooking(userId, serviceId, booking, res);
 
-  try {
-    const LINE_ITEM = {
-      price_data: {
-        currency: "gbp",
-        product_data: {
-          name: service.title,
-          description: service.description
-        },
-        unit_amount: service.price
-      },
-      quantity: 1
+    const { title, description, price } = res.locals.service;
+    const { email_address: emailAddress } = res.locals.user;
+
+    const metadata = {
+      user_id: initialBooking.user_id,
+      service_id: initialBooking.service_id,
+      booking_id: initialBooking.id as number
     };
 
-    const session = await stripe.checkout.sessions.create({
-      success_url: `${CLIENT_URL}/success?id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${CLIENT_URL}/cancel`,
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: [LINE_ITEM],
-      customer_email: user.email_address,
-      shipping_address_collection: { allowed_countries: ["GB"] },
-      metadata: {
-        user_id: req.body.user_id,
-        service_id: req.body.service_id
-      }
-    });
+    // start stripe checkout session
+    const checkoutSession = await createCheckoutSession(
+      title,
+      description,
+      price,
+      emailAddress,
+      metadata
+    );
 
-    const STRIPE_PAYMENT_INTENT = session.payment_intent;
-    const STRIPE_AMOUT_TOTAL = session.amount_total;
-    const STRIPE_PAYMENT_STATUS = session.payment_status;
+    const {
+      payment_intent: paymentIntent,
+      amount_total: amountTotal,
+      payment_status: paymentStatus
+    } = checkoutSession;
 
-    if (
-      !STRIPE_PAYMENT_INTENT ||
-      !STRIPE_AMOUT_TOTAL ||
-      !STRIPE_PAYMENT_STATUS
-    ) {
-      throw new BadRequestError("instance", "type", "title", "detail");
+    if (!paymentIntent || !amountTotal || !paymentStatus) {
+      throw new Error("Stripe issue... Required!");
     }
 
-    const payment: Payment = {
-      stripe_reference: STRIPE_PAYMENT_INTENT as string,
-      total: STRIPE_AMOUT_TOTAL,
-      payment_status: STRIPE_PAYMENT_STATUS
-    };
+    // now create a payment with status unpaid
+    const unpaidPayment = await createPayment(
+      paymentIntent.toString(),
+      amountTotal,
+      paymentStatus
+    );
 
-    const newPayment = await paymentStore.create(payment);
+    // add payment_id to stripe meta data
+    if (checkoutSession && checkoutSession.metadata && unpaidPayment.id) {
+      checkoutSession.metadata.payment_id = unpaidPayment.id?.toString();
+    }
 
-    const booking: Booking = {
-      booking: req.body.booking,
-      user_id: req.body.user_id,
-      service_id: req.body.service_id,
-      payment_id: newPayment.id as number
-    };
+    // assign initialBooking with an unpaid payment ID
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const unpaidBooking = await updateBookingPaymentId(
+      initialBooking.booking,
+      initialBooking.user_id,
+      initialBooking.service_id,
+      unpaidPayment.id as number,
+      initialBooking.id as number
+    );
 
-    await bookingStore.create(booking);
+    if (!checkoutSession.url) {
+      throw new Error("Stripe issue... Required!");
+    }
 
-    res.status(200).json({ id: session.id, url: session.url });
+    res.redirect(checkoutSession.url);
   } catch (err) {
-    logger.error(err);
+    logger.debug(err);
 
     next(err);
   }
 };
 
-export const updatePaymentStatus = (
+export const stripeCheckoutUpdate = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const PAYLOAD = req.body;
-    const STRIPE_SIGNATURE = req.headers["stripe-signature"];
+    const payload = req.body;
+    const signature = req.headers["stripe-signature"];
+    const { STRIPE_ENDPOINT_SECRET } = process.env;
 
-    if (!PAYLOAD || !STRIPE_SIGNATURE || STRIPE_ENDPOINT_SECRET) {
+    if (!payload || !signature || !STRIPE_ENDPOINT_SECRET) {
       throw new BadRequestError("instance", "type", "title", "detail");
     }
 
-    const event = stripe.webhooks.constructEvent(
-      PAYLOAD,
-      STRIPE_SIGNATURE,
+    const event = stripeApi.webhooks.constructEvent(
+      payload,
+      signature,
       STRIPE_ENDPOINT_SECRET as string
     );
 
     if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      console.log(session);
-      // update payment status based on stripe_reference / payment intent
+      const stripeObject = event.data.object as any;
+
+      if (!stripeObject.payment_status || !stripeObject.metadata.payment_id) {
+        throw new Error("Can't proceed.");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const completedPayment = await updatePaymentStatus(
+        stripeObject.payment_status,
+        stripeObject.metadata.payment_id
+      );
     }
 
     res.sendStatus(200);
   } catch (err) {
-    logger.error(err);
+    logger.debug(err);
 
     next(err);
   }
