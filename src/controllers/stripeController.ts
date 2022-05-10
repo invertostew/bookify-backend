@@ -81,7 +81,8 @@ export const stripeCheckoutSession = async (
       throw new Error("Stripe issue... Required!");
     }
 
-    res.redirect(checkoutSession.url);
+    // res.redirect(checkoutSession.url);
+    res.status(200).json({ url: checkoutSession.url });
   } catch (err) {
     logger.debug(err);
 
