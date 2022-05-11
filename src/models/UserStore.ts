@@ -122,6 +122,9 @@ export class UserStore {
 
       return result.rows[0];
     } catch (err: unknown) {
+      // show error in heroku log...
+      console.error(err);
+
       if (err instanceof PostgresDatabaseError) {
         logger.error(err);
 
