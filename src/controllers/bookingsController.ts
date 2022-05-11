@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Booking, BookingStore } from "../models/BookingStore";
+import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 
 const store = new BookingStore();
 
@@ -12,79 +13,147 @@ export const index = async (
   try {
     const bookings = await store.index();
 
-    res.status(200).json(bookings);
-  } catch (err) {
+    res.json(bookings);
+  } catch (err: unknown) {
     next(err);
   }
 };
 
 export const show = async (
-  req: Request,
+  req: Request<{ id: number }, {}, {}, {}>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const booking = await store.show(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(booking);
-  } catch (err) {
+    if (Number.isNaN(id)) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
+    const booking = await store.show(id);
+
+    res.json(booking);
+  } catch (err: unknown) {
     next(err);
   }
 };
 
 export const create = async (
-  req: Request,
+  req: Request<
+    {},
+    {},
+    {
+      booking: string;
+      user_id: number;
+      service_id: number;
+      payment_id: number | null;
+    },
+    {}
+  >,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
+    const {
+      booking: bookingDateTime,
+      user_id: userId,
+      service_id: serviceId,
+      payment_id: paymentId
+    } = req.body;
+
+    if (!bookingDateTime || !userId || !serviceId) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
+    if (Number.isNaN(userId) || Number.isNaN(serviceId)) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
     const booking: Booking = {
-      booking: req.body.booking,
-      user_id: req.body.user_id,
-      service_id: req.body.service_id,
-      payment_id: req.body.payment_id
+      booking: bookingDateTime,
+      user_id: userId,
+      service_id: serviceId,
+      payment_id: paymentId
     };
 
     const newBooking = await store.create(booking);
 
     res.status(201).json(newBooking);
-  } catch (err) {
+  } catch (err: unknown) {
     next(err);
   }
 };
 
 export const update = async (
-  req: Request,
+  req: Request<
+    { id: number },
+    {},
+    {
+      id: number;
+      booking: string;
+      user_id: number;
+      service_id: number;
+      payment_id: number | null;
+    },
+    {}
+  >,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
+    const {
+      id: bookingId,
+      booking: bookingDateTime,
+      user_id: userId,
+      service_id: serviceId,
+      payment_id: paymentId
+    } = req.body;
+
+    if (!bookingId || !bookingDateTime || !userId || !serviceId) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
+    if (
+      Number.isNaN(bookingId) ||
+      Number.isNaN(userId) ||
+      Number.isNaN(serviceId)
+    ) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
     const booking: Booking = {
-      id: Number(req.params.id),
-      booking: req.body.booking,
-      user_id: req.body.user_id,
-      service_id: req.body.service_id,
-      payment_id: req.body.payment_id
+      id: bookingId,
+      booking: bookingDateTime,
+      user_id: userId,
+      service_id: serviceId,
+      payment_id: paymentId
     };
 
     const updatedBooking = await store.update(booking);
 
-    res.status(200).json(updatedBooking);
-  } catch (err) {
+    res.json(updatedBooking);
+  } catch (err: unknown) {
     next(err);
   }
 };
 
 export const destroy = async (
-  req: Request,
+  req: Request<{ id: number }, {}, {}, {}>,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const deletedBooking = await store.destroy(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(deletedBooking);
-  } catch (err) {
+    if (Number.isNaN(id)) {
+      throw new BadRequestError("instance", "type", "string", "detail");
+    }
+
+    const deletedBooking = await store.destroy(id);
+
+    res.json(deletedBooking);
+  } catch (err: unknown) {
     next(err);
   }
 };

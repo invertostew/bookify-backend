@@ -1,5 +1,5 @@
-import { DatabaseError as PostgresDatabaseError } from "pg";
 import bcrypt from "bcrypt";
+import { DatabaseError as PostgresDatabaseError } from "pg";
 
 import pool from "../database";
 import Logger from "../classes/logger/Logger";
@@ -123,9 +123,9 @@ export class UserStore {
       return result.rows[0];
     } catch (err: unknown) {
       if (err instanceof PostgresDatabaseError) {
-        logger.debug(err.message);
+        logger.error(err);
 
-        throw new ValidationError(err);
+        throw new ValidationError();
       }
 
       logger.error(err);

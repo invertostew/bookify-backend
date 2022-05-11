@@ -1,30 +1,23 @@
-import { DatabaseError as pgDatabaseError } from "pg";
-
 import DatabaseError from "../DatabaseError";
+
+const { SERVER_URL } = process.env;
 
 class ValidationError extends DatabaseError {
   protected status = 400;
 
-  constructor(pgErr: pgDatabaseError) {
-    let type = "";
-    let title = "";
-    // come back and tidy up pgErr.detail if have time
-    const detail = pgErr.detail || "";
+  protected static DEFAULT_TYPE = `${SERVER_URL}/api/problem/failed-validations`;
 
-    if (pgErr.code === "23502") {
-      type = "";
-      title = pgErr.message;
-    } else if (pgErr.code === "23505") {
-      type = "";
-      title = pgErr.message;
-    } else if (pgErr.code === "23514") {
-      type = "";
-      title = pgErr.message;
-    }
+  protected static DEFAULT_TITLE = "Failed to perform validation operation";
 
+  protected static DEFAULT_DETAIL =
+    "There has been a validation error, please check the log files";
+
+  constructor(
+    type = ValidationError.DEFAULT_TYPE,
+    title = ValidationError.DEFAULT_TITLE,
+    detail = ValidationError.DEFAULT_DETAIL
+  ) {
     super(type, title, detail);
-
-    // console.log(pgErr);
   }
 }
 

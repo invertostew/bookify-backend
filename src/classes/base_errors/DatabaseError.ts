@@ -3,12 +3,12 @@ import ApplicationError from "./ApplicationError";
 const { SERVER_URL } = process.env;
 
 class DatabaseError extends ApplicationError {
-  private static DEFAULT_TYPE = `${SERVER_URL}/api/problem/failed-database-operation`;
+  protected static DEFAULT_TYPE = `${SERVER_URL}/api/problem/failed-database-operation`;
 
-  private static DEFAULT_TITLE = "Failed to perform database operation";
+  protected static DEFAULT_TITLE = "Failed to perform database operation";
 
-  private static DEFAULT_DETAIL =
-    "There has been a database error, check the error logs";
+  protected static DEFAULT_DETAIL =
+    "There has been a database error, please check the log  files";
 
   constructor(
     type = DatabaseError.DEFAULT_TYPE,
