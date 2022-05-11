@@ -46,19 +46,21 @@ export const stripeCheckoutSession = async (
     );
 
     const {
-      payment_intent: paymentIntent,
-      amount_total: amountTotal,
+      payment_intent: stripeReference,
+      amount_total: total,
       payment_status: paymentStatus
     } = checkoutSession;
 
-    if (!paymentIntent || !amountTotal || !paymentStatus) {
-      throw new Error("Stripe issue... Required!");
+    if (!stripeReference || !total || !paymentStatus) {
+      throw new Error(
+        "Stripe response is missing 'payment_intent', 'amount_total', or 'payment_status'"
+      );
     }
 
     // now create a payment with status unpaid
     const unpaidPayment = await createPayment(
-      paymentIntent.toString(),
-      amountTotal,
+      stripeReference.toString(),
+      total,
       paymentStatus
     );
 
@@ -73,11 +75,11 @@ export const stripeCheckoutSession = async (
     );
 
     if (!checkoutSession.url) {
-      throw new Error("Stripe issue... Required!");
+      throw new Error("Stripe response is missing 'url'");
     }
 
     // res.redirect(checkoutSession.url);
-    res.status(200).json({ url: checkoutSession.url });
+    res.json({ url: checkoutSession.url });
   } catch (err) {
     logger.debug(err);
 
@@ -108,28 +110,28 @@ export const stripeCheckoutUpdate = async (
     if (event.type === "checkout.session.completed") {
       const stripeObject = event.data.object as any;
 
-      // log for heroku
-      console.error(stripeObject.payment_status);
-      console.error(stripeObject.metadata);
+      const { payment_status: paymentStatus, payment_intent: stripeReference } =
+        stripeObject;
 
-      if (!stripeObject.payment_intent || !stripeObject.payment_status) {
-        throw new Error("Can't proceed.");
+      if (!paymentStatus || !stripeReference) {
+        throw new Error(
+          "Stripe event is missing 'payment_status' or 'payment_intent'"
+        );
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const completedPayment = await updatePaymentStatus(
-        stripeObject.payment_status,
-        stripeObject.payment_intent
+        paymentStatus,
+        stripeReference
       );
     } else {
-      throw new Error("This is an unhandled event");
+      throw new Error(
+        "We are not currently handling this type of Stripe event."
+      );
     }
 
     res.sendStatus(200);
   } catch (err) {
-    // log for heroku
-    console.log(err);
-
     logger.debug(err);
 
     next(err);
