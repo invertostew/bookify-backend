@@ -67,6 +67,8 @@ export const stripeCheckoutSession = async (
       checkoutSession.metadata.payment_id = unpaidPayment.id?.toString();
     }
 
+    console.error(checkoutSession);
+
     // assign initialBooking with an unpaid payment ID
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const unpaidBooking = await updateBookingPaymentId(
@@ -114,9 +116,10 @@ export const stripeCheckoutUpdate = async (
       const stripeObject = event.data.object as any;
 
       // log for heroku
-      console.error(stripeObject);
+      console.error(stripeObject.payment_status);
+      console.error(stripeObject.metadata);
 
-      if (stripeObject.payment_status && stripeObject.metadata.payment_id) {
+      if (!stripeObject.payment_status || !stripeObject.metadata.payment_id) {
         throw new Error("Can't proceed.");
       }
 
