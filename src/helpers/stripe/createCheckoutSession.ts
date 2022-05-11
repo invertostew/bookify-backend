@@ -40,7 +40,8 @@ const createCheckoutSession = async (
     metadata: {
       user_id: metadata.user_id,
       service_id: metadata.service_id,
-      booking_id: metadata.booking_id
+      booking_id: metadata.booking_id,
+      payment_id: null
     }
   });
 
