@@ -134,10 +134,15 @@ export const stripeCheckoutUpdate = async (
         stripeObject.payment_status,
         stripeObject.metadata.payment_id
       );
+    } else {
+      throw new Error("This is an unhandled event");
     }
 
     res.sendStatus(200);
   } catch (err) {
+    // log for heroku
+    console.log(err);
+
     logger.debug(err);
 
     next(err);
