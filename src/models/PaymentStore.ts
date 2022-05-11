@@ -106,7 +106,7 @@ export class PaymentStore {
 
   public async updatePaymentStatus(
     paymentStatus: string,
-    id: number
+    stripeReference: string
   ): Promise<Payment> {
     try {
       const connection = await pool.connect();
@@ -116,18 +116,20 @@ export class PaymentStore {
         SET
           payment_status = $1
         WHERE
-          id = $2
+          stripe_reference = $2
+        RETURNING
+          *
       `;
-      const result = await pool.query(sql, [paymentStatus, id]);
+      const result = await pool.query(sql, [paymentStatus, stripeReference]);
 
       connection.release();
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${SERVER_URL}/api/payments/${id}`,
+          `${SERVER_URL}/api/payments/${result.rows[0].id}`,
           `${SERVER_URL}/api/problem/entity-not-found`,
           "Entity not found",
-          `There is no payment with id '${id}'`
+          `There is no payment with id '${result.rows[0].id}'`
         );
       }
 

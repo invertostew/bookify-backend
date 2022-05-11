@@ -62,13 +62,6 @@ export const stripeCheckoutSession = async (
       paymentStatus
     );
 
-    // add payment_id to stripe meta data
-    if (checkoutSession && checkoutSession.metadata && unpaidPayment.id) {
-      checkoutSession.metadata.payment_id = unpaidPayment.id?.toString();
-    }
-
-    console.error(checkoutSession);
-
     // assign initialBooking with an unpaid payment ID
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const unpaidBooking = await updateBookingPaymentId(
@@ -119,14 +112,14 @@ export const stripeCheckoutUpdate = async (
       console.error(stripeObject.payment_status);
       console.error(stripeObject.metadata);
 
-      if (!stripeObject.payment_status || !stripeObject.metadata.payment_id) {
+      if (!stripeObject.payment_intent || !stripeObject.payment_status) {
         throw new Error("Can't proceed.");
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const completedPayment = await updatePaymentStatus(
         stripeObject.payment_status,
-        stripeObject.metadata.payment_id
+        stripeObject.payment_intent
       );
     } else {
       throw new Error("This is an unhandled event");

@@ -2,11 +2,14 @@ import { Payment, PaymentStore } from "../../models/PaymentStore";
 
 const updatePaymentStatus = async (
   paymentStatus: string,
-  paymentId: number
+  stripeReference: string
 ): Promise<Payment> => {
   const paymentStore = new PaymentStore();
 
-  const payment = paymentStore.updatePaymentStatus(paymentStatus, paymentId);
+  const payment = paymentStore.updatePaymentStatus(
+    paymentStatus,
+    stripeReference
+  );
 
   return payment;
 };
