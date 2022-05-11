@@ -45,9 +45,6 @@ export const stripeCheckoutSession = async (
       metadata
     );
 
-    // log for heroku
-    console.error("checkoutSession...", checkoutSession);
-
     const {
       payment_intent: paymentIntent,
       amount_total: amountTotal,
@@ -65,9 +62,6 @@ export const stripeCheckoutSession = async (
       paymentStatus
     );
 
-    // log for heroku
-    console.error("unpaidPayment...", unpaidPayment);
-
     // add payment_id to stripe meta data
     if (checkoutSession && checkoutSession.metadata && unpaidPayment.id) {
       checkoutSession.metadata.payment_id = unpaidPayment.id?.toString();
@@ -83,9 +77,6 @@ export const stripeCheckoutSession = async (
       initialBooking.id as number
     );
 
-    // log for heroku
-    console.error("unpaidBooking", unpaidBooking);
-
     if (!checkoutSession.url) {
       throw new Error("Stripe issue... Required!");
     }
@@ -93,9 +84,6 @@ export const stripeCheckoutSession = async (
     // res.redirect(checkoutSession.url);
     res.status(200).json({ url: checkoutSession.url });
   } catch (err) {
-    // log for heroku
-    console.error(err);
-
     logger.debug(err);
 
     next(err);
@@ -124,6 +112,9 @@ export const stripeCheckoutUpdate = async (
 
     if (event.type === "checkout.session.completed") {
       const stripeObject = event.data.object as any;
+
+      // log for heroku
+      console.error(stripeObject);
 
       if (!stripeObject.payment_status || !stripeObject.metadata.payment_id) {
         throw new Error("Can't proceed.");
