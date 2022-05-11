@@ -93,6 +93,9 @@ export const stripeCheckoutSession = async (
     // res.redirect(checkoutSession.url);
     res.status(200).json({ url: checkoutSession.url });
   } catch (err) {
+    // log for heroku
+    console.error(err);
+
     logger.debug(err);
 
     next(err);
