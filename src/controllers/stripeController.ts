@@ -116,7 +116,7 @@ export const stripeCheckoutUpdate = async (
       // log for heroku
       console.error(stripeObject);
 
-      if (!stripeObject.payment_status || !stripeObject.metadata.payment_id) {
+      if (stripeObject.payment_status && stripeObject.metadata.payment_id) {
         throw new Error("Can't proceed.");
       }
 
