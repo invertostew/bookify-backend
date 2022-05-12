@@ -18,9 +18,9 @@ const verifyAuthToken = (
     res.locals.decoded = decoded;
 
     next();
-  } catch (err) {
+  } catch (err: unknown) {
     throw new UnauthorisedError(
-      `${req.baseUrl}${req.path}`,
+      `${SERVER_URL}${req.baseUrl}${req.path}`,
       `${SERVER_URL}/api/problem/unauthorised`,
       "User not authorised",
       "You must be logged in to access this resource"

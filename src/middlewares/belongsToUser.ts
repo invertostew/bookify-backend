@@ -5,12 +5,13 @@ import UnauthorisedError from "../classes/base_errors/user_facing_errors/Unautho
 const { SERVER_URL } = process.env;
 
 const belongsToUser = (req: Request, res: Response, next: NextFunction) => {
-  const { decoded } = res.locals;
-
   try {
-    if (Number(decoded.user_id) !== Number(req.params.id)) {
+    const { decoded } = res.locals;
+    const { id } = req.params;
+
+    if (Number(decoded.user_id) !== Number(id)) {
       throw new UnauthorisedError(
-        `${req.baseUrl}${req.path}`,
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
         `${SERVER_URL}/api/problem/unauthorised`,
         "User not authorised",
         "This resource does not belong to you"
@@ -18,7 +19,7 @@ const belongsToUser = (req: Request, res: Response, next: NextFunction) => {
     }
 
     next();
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof UnauthorisedError) {
       throw new UnauthorisedError(
         err.instance,

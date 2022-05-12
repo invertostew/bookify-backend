@@ -13,9 +13,9 @@ const isSuperUser = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { decoded } = res.locals;
-
   try {
+    const { decoded } = res.locals;
+
     const connection = await pool.connect();
     const sql = `
       SELECT
@@ -31,7 +31,7 @@ const isSuperUser = async (
 
     if (result.rows[0].role !== "superuser") {
       throw new UnauthorisedError(
-        `${req.baseUrl}${req.path}`,
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
         `${SERVER_URL}/api/problem/unauthorised`,
         "User not authorised",
         "You must be a super user to access this resource"
@@ -39,7 +39,7 @@ const isSuperUser = async (
     }
 
     next();
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof UnauthorisedError) {
       throw new UnauthorisedError(
         err.instance,
