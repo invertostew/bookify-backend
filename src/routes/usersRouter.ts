@@ -18,18 +18,10 @@ usersRouter
   .put(verifyAuthToken, belongsToUser, usersController.update)
   .delete(verifyAuthToken, belongsToUser, usersController.destroy);
 
-// eslint-disable-next-line prettier/prettier
-usersRouter
-  .route("/:id/calendars")
-  .get(usersController.listUserCalendars);
+usersRouter.get("/:id/calendars", usersController.listUserCalendars);
 
-usersRouter
-  .route("/:id/calendars/:calendarId")
-  .get(usersController.showUserCalendar);
+usersRouter.get("/:id/calendars/:calendarId", usersController.showUserCalendar);
 
-// eslint-disable-next-line prettier/prettier
-usersRouter
-  .route("/authenticate")
-  .post(usersController.authenticate);
+usersRouter.post("/authenticate", usersController.authenticate);
 
 export default usersRouter;
