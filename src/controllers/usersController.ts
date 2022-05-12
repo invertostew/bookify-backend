@@ -93,7 +93,10 @@ export const create = async (
         user_id: newUser.id,
         role_id: newUser.role_id
       },
-      JWT_SECRET as string
+      JWT_SECRET as string,
+      {
+        expiresIn: "7d"
+      }
     );
 
     res.status(201).json({ token });
@@ -210,7 +213,10 @@ export const authenticate = async (
         user_id: authenticatedUser.id,
         role_id: authenticatedUser.role_id
       },
-      JWT_SECRET as string
+      JWT_SECRET as string,
+      {
+        expiresIn: "7d"
+      }
     );
 
     res.json({ token });
