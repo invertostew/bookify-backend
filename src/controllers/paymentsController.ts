@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
 import { PaymentStore } from "../models/PaymentStore";
+import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
+
+const { SERVER_URL } = process.env;
 
 const store = new PaymentStore();
 
@@ -12,7 +15,7 @@ export const index = async (
   try {
     const payments = await store.index();
 
-    res.status(200).json(payments);
+    res.json(payments);
   } catch (err) {
     next(err);
   }
@@ -24,9 +27,20 @@ export const show = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const payment = await store.show(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(payment);
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const payment = await store.show(+id);
+
+    res.json(payment);
   } catch (err) {
     next(err);
   }

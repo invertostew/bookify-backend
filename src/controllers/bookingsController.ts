@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { Booking, BookingStore } from "../models/BookingStore";
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 
+const { SERVER_URL } = process.env;
+
 const store = new BookingStore();
 
 export const index = async (
@@ -20,18 +22,23 @@ export const index = async (
 };
 
 export const show = async (
-  req: Request<{ id: number }, {}, {}, {}>,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { id } = req.params;
 
-    if (Number.isNaN(id)) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
     }
 
-    const booking = await store.show(id);
+    const booking = await store.show(+id);
 
     res.json(booking);
   } catch (err: unknown) {
@@ -40,17 +47,7 @@ export const show = async (
 };
 
 export const create = async (
-  req: Request<
-    {},
-    {},
-    {
-      booking: string;
-      user_id: number;
-      service_id: number;
-      payment_id: number | null;
-    },
-    {}
-  >,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -63,11 +60,24 @@ export const create = async (
     } = req.body;
 
     if (!bookingDateTime || !userId || !serviceId) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains 'booking', 'user_id', and 'service_id' properties`
+      );
     }
 
-    if (Number.isNaN(userId) || Number.isNaN(serviceId)) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+    if (
+      Number.isNaN(parseInt(userId.toString(), 10)) ||
+      Number.isNaN(parseInt(serviceId.toString(), 10))
+    ) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-property-is-nan`,
+        "Request body property 'user_id' or 'service_id' is NaN",
+        `Ensure that user_id '${userId}' and service_id '${serviceId}' are numbers`
+      );
     }
 
     const booking: Booking = {
@@ -86,44 +96,52 @@ export const create = async (
 };
 
 export const update = async (
-  req: Request<
-    { id: number },
-    {},
-    {
-      id: number;
-      booking: string;
-      user_id: number;
-      service_id: number;
-      payment_id: number | null;
-    },
-    {}
-  >,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { id } = req.params;
+
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
     const {
-      id: bookingId,
       booking: bookingDateTime,
       user_id: userId,
       service_id: serviceId,
       payment_id: paymentId
     } = req.body;
 
-    if (!bookingId || !bookingDateTime || !userId || !serviceId) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+    if (!bookingDateTime || !userId || !serviceId) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains 'booking', 'user_id', and 'service_id' properties`
+      );
     }
 
     if (
-      Number.isNaN(bookingId) ||
-      Number.isNaN(userId) ||
-      Number.isNaN(serviceId)
+      Number.isNaN(parseInt(userId.toString(), 10)) ||
+      Number.isNaN(parseInt(serviceId.toString(), 10))
     ) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-property-is-nan`,
+        "Request body property 'user_id' or 'service_id' is NaN",
+        `Ensure that user_id '${userId}' and service_id '${serviceId}' are numbers`
+      );
     }
 
     const booking: Booking = {
-      id: bookingId,
+      id: +id,
       booking: bookingDateTime,
       user_id: userId,
       service_id: serviceId,
@@ -139,18 +157,23 @@ export const update = async (
 };
 
 export const destroy = async (
-  req: Request<{ id: number }, {}, {}, {}>,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { id } = req.params;
 
-    if (Number.isNaN(id)) {
-      throw new BadRequestError("instance", "type", "string", "detail");
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
     }
 
-    const deletedBooking = await store.destroy(id);
+    const deletedBooking = await store.destroy(+id);
 
     res.json(deletedBooking);
   } catch (err: unknown) {

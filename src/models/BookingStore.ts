@@ -11,7 +11,7 @@ export interface Booking {
   booking: string;
   user_id: number;
   service_id: number;
-  payment_id: number | null;
+  payment_id?: number | null;
 }
 
 export class BookingStore {

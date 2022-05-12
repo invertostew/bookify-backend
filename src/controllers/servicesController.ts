@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Service, ServiceStore } from "../models/ServiceStore";
+import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 import poundsToPence from "../helpers/poundsToPence";
+
+const { SERVER_URL } = process.env;
 
 const store = new ServiceStore();
 
@@ -13,8 +16,8 @@ export const index = async (
   try {
     const services = await store.index();
 
-    res.status(200).json(services);
-  } catch (err) {
+    res.json(services);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -25,10 +28,21 @@ export const show = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const service = await store.show(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(service);
-  } catch (err) {
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const service = await store.show(+id);
+
+    res.json(service);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -39,18 +53,44 @@ export const create = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const {
+      title,
+      description,
+      duration,
+      price,
+      calendar_id: calendarId
+    } = req.body;
+
+    if (!title || !description || !duration || !price || !calendarId) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains 'title', 'description', 'duration', 'price' and 'calendar_id' properties`
+      );
+    }
+
+    if (Number.isNaN(parseInt(calendarId.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-property-is-nan`,
+        "Request body property 'user_id' or 'service_id' is NaN",
+        `The calendar_id '${calendarId}' is not a number`
+      );
+    }
+
     const service: Service = {
-      title: req.body.title,
-      description: req.body.description,
-      duration: req.body.duration,
-      price: poundsToPence(req.body.price),
-      calendar_id: req.body.calendar_id
+      title,
+      description,
+      duration,
+      price: poundsToPence(price),
+      calendar_id: calendarId
     };
 
     const newService = await store.create(service);
 
     res.status(201).json(newService);
-  } catch (err) {
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -61,18 +101,56 @@ export const update = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { id } = req.params;
+
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const {
+      title,
+      description,
+      duration,
+      price,
+      calendar_id: calendarId
+    } = req.body;
+
+    if (!title || !description || !duration || !price || !calendarId) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains 'title', 'description', 'duration', 'price' and 'calendar_id' properties`
+      );
+    }
+
+    if (Number.isNaN(parseInt(calendarId.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-property-is-nan`,
+        "Request body property 'user_id' or 'service_id' is NaN",
+        `The calendar_id '${calendarId}' is not a number`
+      );
+    }
+
     const service: Service = {
-      title: req.body.title,
-      description: req.body.description,
-      duration: req.body.duration,
-      price: req.body.price,
-      calendar_id: req.body.calendar_id
+      id: +id,
+      title,
+      description,
+      duration,
+      price: poundsToPence(price),
+      calendar_id: calendarId
     };
 
     const updatedService = await store.update(service);
 
-    res.status(200).json(updatedService);
-  } catch (err) {
+    res.json(updatedService);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -83,10 +161,21 @@ export const destroy = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const deletedService = await store.destroy(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(deletedService);
-  } catch (err) {
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const deletedService = await store.destroy(+id);
+
+    res.json(deletedService);
+  } catch (err: unknown) {
     next(err);
   }
 };

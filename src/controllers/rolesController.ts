@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 
 import { Role, RoleStore } from "../models/RoleStore";
+import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
+
+const { SERVER_URL } = process.env;
 
 const store = new RoleStore();
 
@@ -12,8 +15,8 @@ export const index = async (
   try {
     const roles = await store.index();
 
-    res.status(200).json(roles);
-  } catch (err) {
+    res.json(roles);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -24,10 +27,21 @@ export const show = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const role = await store.show(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(role);
-  } catch (err) {
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const role = await store.show(+id);
+
+    res.json(role);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -38,6 +52,15 @@ export const create = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    if (!req.body.role) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains a 'role' property`
+      );
+    }
+
     const role: Role = {
       role: req.body.role
     };
@@ -45,7 +68,7 @@ export const create = async (
     const newRole = await store.create(role);
 
     res.status(201).json(newRole);
-  } catch (err) {
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -56,15 +79,35 @@ export const update = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { id } = req.params;
+
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    if (!req.body.role) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains a 'role' property`
+      );
+    }
+
     const role: Role = {
-      id: Number(req.params.id),
+      id: +id,
       role: req.body.role
     };
 
     const updatedRole = await store.update(role);
 
-    res.status(200).json(updatedRole);
-  } catch (err) {
+    res.json(updatedRole);
+  } catch (err: unknown) {
     next(err);
   }
 };
@@ -75,10 +118,21 @@ export const destroy = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const deletedRole = await store.destroy(Number(req.params.id));
+    const { id } = req.params;
 
-    res.status(200).json(deletedRole);
-  } catch (err) {
+    if (Number.isNaN(parseInt(id.toString(), 10))) {
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/parameter-is-nan`,
+        "Request parameter 'id' is NaN",
+        `The id '${id}' is not a number`
+      );
+    }
+
+    const deletedRole = await store.destroy(+id);
+
+    res.json(deletedRole);
+  } catch (err: unknown) {
     next(err);
   }
 };

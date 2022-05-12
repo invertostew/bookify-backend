@@ -10,6 +10,8 @@ import updatePaymentStatus from "../helpers/stripe/updatePaymentStatus";
 import BadRequestError from "../classes/base_errors/user_facing_errors/BadRequestError";
 import Logger from "../classes/logger/Logger";
 
+const { SERVER_URL } = process.env;
+
 const logger = new Logger("stripe_logs.txt");
 
 export const stripeCheckoutSession = async (
@@ -20,7 +22,12 @@ export const stripeCheckoutSession = async (
   const { booking, user_id: userId, service_id: serviceId } = req.body;
 
   if (!booking || !userId || !serviceId) {
-    throw new BadRequestError("instance", "type", "title", "detail");
+    throw new BadRequestError(
+      `${SERVER_URL}${req.baseUrl}${req.path}`,
+      `${SERVER_URL}/api/problem/req-body-missing`,
+      "Request body is missing properties",
+      `Ensure that the request body contains 'booking', 'user_id', and 'service_id' properties`
+    );
   }
 
   try {
@@ -80,7 +87,7 @@ export const stripeCheckoutSession = async (
 
     // res.redirect(checkoutSession.url);
     res.json({ url: checkoutSession.url });
-  } catch (err) {
+  } catch (err: unknown) {
     logger.debug(err);
 
     next(err);
@@ -98,7 +105,12 @@ export const stripeCheckoutUpdate = async (
     const { STRIPE_ENDPOINT_SECRET } = process.env;
 
     if (!payload || !signature || !STRIPE_ENDPOINT_SECRET) {
-      throw new BadRequestError("instance", "type", "title", "detail");
+      throw new BadRequestError(
+        `${SERVER_URL}${req.baseUrl}${req.path}`,
+        `${SERVER_URL}/api/problem/req-body-missing`,
+        "Request body is missing properties",
+        `Ensure that the request body contains a 'payload' property`
+      );
     }
 
     const event = stripeApi.webhooks.constructEvent(
@@ -131,7 +143,7 @@ export const stripeCheckoutUpdate = async (
     }
 
     res.sendStatus(200);
-  } catch (err) {
+  } catch (err: unknown) {
     logger.debug(err);
 
     next(err);

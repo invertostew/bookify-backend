@@ -13,8 +13,6 @@ rolesRouter
   .get(middlewares, rolesController.index)
   .post(middlewares, rolesController.create);
 
-// come back and add check to only allow viewing of same role unless superuser
-// but for now, leave open for front-end calls
 rolesRouter
   .route("/:id")
   .get(rolesController.show)
