@@ -19,6 +19,10 @@ The idea for Bookify was born because my mum is ALWAYS double booking clients, a
 * [Jest (TS Jest)](https://github.com/kulshekhar/ts-jest)
 * [SuperTest](https://github.com/visionmedia/supertest)
 
+## Deployment
+
+This API is currently deployed on Heroku and is available here: [Bookify Backend](https://bookify-be.herokuapp.com/api/)
+
 ## Features
 
 * Users can sign up
@@ -31,6 +35,7 @@ The idea for Bookify was born because my mum is ALWAYS double booking clients, a
 * We use the Stripe Checkout API to allow users to purchase services
 * There is also a webhook that lets Stripe notify us when a payment is complete and update our database
 * Logging, there is a custom logging class which will write error messages or debug messages to log files, hiding critical info from users
+* Problem Detail error handling standard
 
 ... and much more!
 
