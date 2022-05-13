@@ -338,7 +338,7 @@ export class UserStore {
 
       if (!result.rows[0]) {
         throw new NotFoundError(
-          `${SERVER_URL}/api/users/${userId}`,
+          `${SERVER_URL}/api/users/${userId}/calendars/${calendarId}`,
           `${SERVER_URL}/api/problem/association-not-found`,
           "Association not found",
           `There is no calendar with id '${calendarId}' associated with user id '${userId}'`
